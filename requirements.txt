@@ -1,0 +1,13 @@
+openai-whisper
+datasets
+transformers
+torch
+webrtcvad
+librosa
+numpy
+pydub
+textblob
+vaderSentiment
+tensorflow
+tensorflow_hub
+scikit-learn
