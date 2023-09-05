@@ -12,3 +12,5 @@ tensorflow
 tensorflow_hub
 scikit-learn
 ffmpeg
+torchaudio
+IPython
