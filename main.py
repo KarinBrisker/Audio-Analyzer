@@ -3,29 +3,25 @@ from datetime import timedelta
 import torch
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-
-import librosa
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
 warnings.filterwarnings("ignore", message=".*The 'nopython' keyword.*")
+
+from classify import calculate_average_logprobs
+
 import whisper
+from whisper.tokenizer import Tokenizer, get_tokenizer
 
 model = whisper.load_model("large")  # Change this to your desired model
+tokenizer = get_tokenizer(multilingual=True, language="he")
 print("Whisper model loaded.")
 
-"""
-tone classification
-sentiment analysis
-toxic words
-background noise
-"""
+
 def transcribe_audio(path, file_name):
-    transcribe = model.transcribe(audio=path, language="he")
+    transcribe = model.transcribe(audio=path, language="he", fp16=False)
     segments = transcribe['segments']
+    classify_audio(segments)
 
     speech_segments = [segment for segment in segments if segment['no_speech_prob'] < 0.5]
     sentiment = analyze_sentiment(speech_segments)
-    classify_audio(segments)
 
     generate_srt_file(segments, file_name)
 
@@ -49,26 +45,20 @@ def classify_audio(speech_segments):
     # Load the audio data and extract features
     # TODO:
     # https://github.com/openai/whisper/discussions/673
-    X = []
+    class_names = open("resources/class_names.txt").read().splitlines()
     for segment in speech_segments:
-        file_path = segment['file_path']  # Add this line to get the file path
-        audio, sr = librosa.load(file_path)
-        mfccs = librosa.feature.mfcc(audio, sr=sr, n_mfcc=40)
-        chroma = librosa.feature.chroma_stft(audio, sr=sr)
-        mel = librosa.feature.melspectrogram(audio, sr=sr)
-        contrast = librosa.feature.spectral_contrast(audio, sr=sr)
-        features = np.concatenate([mfccs, chroma, mel, contrast])
-        X.append(features)
-    X = np.array(X)
+        # Convert the audio segment into a log-Mel spectrogram
+        spectrogram = segment['mel']
 
-    # Load the pre-trained classifier
-    clf = RandomForestClassifier()
-    clf.load('classifier.pkl')
+        # Pass the spectrogram into the encoder of the Whisper model
+        audio_features = model.encoder(spectrogram)
 
-    # Classify the audio segments
-    for i, segment in enumerate(speech_segments):
-        label = clf.predict(X[i])
-        print(f"Background noise: {label}")
+        average_logprobs = calculate_average_logprobs(model=model, audio_features=audio_features,
+                                                      class_names=class_names, tokenizer=tokenizer)
+        sorted_indices = sorted(range(len(class_names)), key=lambda i: average_logprobs[i], reverse=True)
+
+        predicted_class = class_names[average_logprobs.argmax()]
+        print(f"Background noise: {predicted_class}")
 
 
 def generate_srt_file(segments, file_name):

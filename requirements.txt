@@ -11,3 +11,4 @@ vaderSentiment
 tensorflow
 tensorflow_hub
 scikit-learn
+ffmpeg
