@@ -5,6 +5,7 @@ import tensorflow_io as tfio
 
 
 class Yamnet:
+    # https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
     def __init__(self):
         self.yamnet_model_handle = 'https://tfhub.dev/google/yamnet/1'
         self.yamnet_model = hub.load(self.yamnet_model_handle)

@@ -1,19 +1,37 @@
-from textblob import TextBlob
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from transformers import AutoTokenizer, AutoModel, pipeline
+from HeBERT.src.HebEMO import HebEMO
 
 
 class SentimentAnalyzer:
     def __init__(self):
-        self.analyzer = SentimentIntensityAnalyzer()
+        self.tokenizer = AutoTokenizer.from_pretrained("avichr/heBERT_sentiment_analysis")
+        self.model = AutoModel.from_pretrained("avichr/heBERT_sentiment_analysis")
+        self.analyzer = pipeline(
+            "sentiment-analysis",
+            model="avichr/heBERT_sentiment_analysis",
+            tokenizer="avichr/heBERT_sentiment_analysis",
+            return_all_scores=True
+        )
+        self.HebEMO_model = HebEMO()
+        self.emotions = ['anticipation', 'joy', 'trust', 'fear', 'surprise', 'anger', 'sadness', 'disgust']
 
-    def analyze(self, text):
-        blob = TextBlob(text)
-        sentiment = self.analyzer.polarity_scores(text)
+    def get_sentiment(self, text):
+        sentiment_scores = self.analyzer(text)
+        sentiment = max(sentiment_scores, key=lambda x: x['score'])['label']
         return sentiment
 
-    def analyze_segments(self, segments):
-        sentiments = []
+    def get_emotion(self, text):
+        emotion_output = self.HebEMO_model.hebemo(text=text)
+        emotion = [self.emotions[i] for i in range(8) if emotion_output[i] == 1]
+        return emotion
+
+    def __call__(self, text):
+        segments = text.splitlines()
+        sentiments_and_emotions = []
+
         for segment in segments:
-            text = segment['text']
-            sentiments.append(self.analyze(text))
-        return sentiments
+            sentiment = self.get_sentiment(segment)
+            emotion = self.get_emotion(segment)
+            sentiments_and_emotions.append((sentiment, emotion))
+
+        return sentiments_and_emotions
