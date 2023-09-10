@@ -1,13 +1,18 @@
 ## TODO:
 
 ### list of tasks:
+#### audio:
+- [X] background noise classification
+- [ ] audio enhancement
+- [ ] speaker diarization  # i don't think we need this ([Link](https://github.com/facebookresearch/svoice))
+- [ ] cleaning dead segments  # risky?
 - [ ] tone classification
-- [ ] sentiment analysis - audio and text
+
+#### text:
+- [X] text extraction
+- [X] sentiment analysis
 - [ ] toxic words
-- [ ] background noise
-- [ ] speaker diarization
-- [ ] speaker identification
-- [ ] cleaning dead segments
+
 
 ### GENERAL NOTES:
 - sampling rate: 16000
