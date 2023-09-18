@@ -3,10 +3,15 @@ from datetime import timedelta
 import whisper
 from whisper.tokenizer import get_tokenizer
 
+from analyzed_audio import AnalyzedAudio
+from pipeline import Pipe
 
-class WhisperTranscriber:
-    def __init__(self, model_name="large", language="he"):
-        self.model = whisper.load_model(model_name)
+
+class WhisperTranscriber(Pipe):
+    def __init__(self, name, language="he"):
+        super().__init__(name=name)
+        whisper_model = "large"
+        self.model = whisper.load_model(whisper_model)
         self.tokenizer = get_tokenizer(multilingual=True, language=language)
         print("Whisper model loaded.")
 
@@ -27,7 +32,9 @@ class WhisperTranscriber:
                 segment = f"{segment_id}\n{start_time} --> {end_time}\n{text[1:] if text[0] == ' ' else text}\n\n"
                 srtFile.write(segment)
 
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        transcribe = self.model.transcribe(audio=analyzed.audio, language="he", fp16=False)
+        segments = transcribe['segments']
+        analyzed.transcript = segments
+        return analyzed
 
-if __name__ == '__main__':
-    whisper_transcriber = WhisperTranscriber()
-    whisper_transcriber.transcribe_audio('path/to/audio/file.mp3', 'file_name')

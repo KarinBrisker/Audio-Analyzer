@@ -1,42 +1,39 @@
+# Audio Analyzer
+### Description:
+This project is a pipeline for audio analysis.
+
+### Solution Diagram:
+
 ![pipeline_diagram](https://github.com/KarinBrisker/audio_analyzer/assets/19929107/d8813349-42e0-4a1a-8f16-a3ee9cdfae60)
 
-
-
-## TODO:
-run pipreqs to generate requirements.txt
-```bash
-pipreqs . --force
-```
 
 ### list of tasks:
 #### audio:
 - [X] background noise classification
-- [ ] audio enhancement
-     1. **Librosa**: It's a Python library for audio and music analysis. It provides the building blocks necessary to create music information retrieval systems.
-
-     2. **Noisereduce**: This library performs noise reduction using spectral gating in python. It can be very effective for certain types of consistent noise such as white noise, ambient noise, or background chatter.
-
-     3. **Scipy**: Scipy has a module signal which has functions like spectrogram for visualizing time-frequency representation and butter, lfilter for designing and applying a digital filter.
-
-     4. **Pydub**: Pydub is a simple and easy-to-use Python library for audio manipulation. It can be used to adjust the volume of an audio file, which can help in normalizing the sound.
-
-- [ ] speaker diarization  # [Link1](https://github.com/facebookresearch/svoice), [Link2](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-stt-diarization?tabs=windows&pivots=programming-language-python)
-- [ ] cleaning dead segments  # risky?
+- [X] audio enhancement
+- [ ] speaker diarization [Link1](https://github.com/facebookresearch/svoice), [Link2](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-stt-diarization?tabs=windows&pivots=programming-language-python)
+- [ ] cleaning dead segments  -  risky?
 - [ ] tone classification
 
 #### text:
 - [X] text extraction
 - [X] sentiment analysis
 - [ ] toxic words
-
-
-### GENERAL NOTES:
-- sampling rate: 16000
+- [ ] text summarization
 
 ### data:
 - [ ] [FSD50K](https://annotator.freesound.org/fsd/release/FSD50K/)
 - [ ] [AudioSet](https://research.google.com/audioset/)
-<<<<<<< HEAD
 
 ### models:
 - [ ] [CLAP](https://arxiv.org/pdf/2206.04769)
+
+### other:
+1. run pipreqs to generate requirements.txt
+```bash
+pipreqs . --force
+```
+1. run:
+```bash
+pip install -r requirements.txt
+```

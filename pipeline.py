@@ -13,8 +13,11 @@ class Pipeline:
         self.steps.append(step)
 
     def __call__(self, updated_audio: AnalyzedAudio):
-        for step in self.steps:
+        print(f"Running pipeline: {self.pipe_name}")
+        for i, step in enumerate(self.steps, start=1):
+            print(f"{i}.    Running step: {step.name}")
             updated_audio = step(updated_audio)
+            print(f"{i}.    Finished step: {step.name}")
         return updated_audio
 
 
