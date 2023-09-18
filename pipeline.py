@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
 
+from analyzed_audio import AnalyzedAudio
+
 
 class Pipeline:
     def __init__(self, pipe_name, steps=None):
@@ -10,9 +12,10 @@ class Pipeline:
     def add_step(self, step):
         self.steps.append(step)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, updated_audio: AnalyzedAudio):
         for step in self.steps:
-            step(*args, **kwargs)
+            updated_audio = step(updated_audio)
+        return updated_audio
 
 
 class Pipe(metaclass=ABCMeta):
@@ -22,6 +25,6 @@ class Pipe(metaclass=ABCMeta):
         self.kwargs = kwargs
 
     @abstractmethod
-    def __call__(self, *args, **kwargs):
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         pass
 

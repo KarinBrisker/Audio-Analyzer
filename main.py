@@ -3,6 +3,7 @@ import json
 
 import librosa
 
+from analyzed_audio import AnalyzedAudio
 from audio_enhancer import AudioEnhancer
 # from audio_classifier import Yamnet
 from noise_reducer import NoiseReducer
@@ -46,8 +47,10 @@ def main():
     # Load the audio files
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
-    pipeline(raw_audio, sample_rate, metadata)
+    input_audio = AnalyzedAudio(args.raw_audio_path, raw_audio, int(sample_rate), metadata)
+    output_audio = pipeline(input_audio)
+    return output_audio
 
 
 if __name__ == '__main__':
-    main()
+    analyzed_audio = main()

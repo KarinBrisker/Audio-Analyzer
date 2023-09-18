@@ -1,3 +1,4 @@
+from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 from time_utils import TimeUtils
 
@@ -7,10 +8,9 @@ class Ranker(Pipe):
         super().__init__(name)
         self.top_k = top_k
         self.features = []
+        self.sample_length = 60  # 60 seconds
 
     def rank(self, features: dict):
-        list_of_mentions_by_name = features.get('namedPeople', [])
-        total_length = features['length']
         suspicious_time_stamps = {}
         for feature in self.features:
             if feature in features:
@@ -23,10 +23,10 @@ class Ranker(Pipe):
 
         # Sort the dictionary by the number of items in each list
         sorted_dict = dict(sorted(suspicious_time_stamps.items(), key=lambda item: len(item[1]), reverse=True))
-        top_k = self.get_top_k(sorted_dict, list_of_mentions_by_name, total_length)
-        return {"time_stamps": top_k, "transcript": features['transcript']}
+        top_k = self.get_top_k(sorted_dict)
+        return top_k
 
-    def get_top_k(self, suspicious_time_stamps, list_of_mentions_by_name, audio_length):
+    def get_top_k(self, suspicious_time_stamps):
         """Get the top k suspicious time stamps."""
         top_k = []
         for key, value in suspicious_time_stamps.items():
@@ -43,7 +43,7 @@ class Ranker(Pipe):
                         top_k.append({'start': float_key, 'end': float_mention, 'description': description})
                     break
                 else:
-                    extended_start, extended_end = TimeUtils.extend_sample(float_key, float_mention, audio_length)
+                    extended_start, extended_end = TimeUtils.extend_sample(float_key, float_mention, self.sample_length)
                     if not self.is_overlapping(extended_start, extended_end, top_k):
                         top_k.append({'start': extended_start, 'end': extended_end, 'description': description})
                     break
@@ -65,5 +65,7 @@ class Ranker(Pipe):
                 return True
         return False
 
-    def __call__(self, *args, **kwargs):
-        return self.rank(*args, **kwargs)
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        top_k = self.rank(analyzed.to_dict())
+        analyzed.__setattr__("ranked", top_k)
+        return analyzed
