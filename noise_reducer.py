@@ -1,7 +1,4 @@
-import librosa
 import noisereduce as nr
-import soundfile as sf
-import numpy as np
 
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe

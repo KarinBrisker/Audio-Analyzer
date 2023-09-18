@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModel, pipeline
 from HeBERT.src.HebEMO import HebEMO
+from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
 
@@ -27,13 +28,13 @@ class SentimentAnalyzer(Pipe):
         emotion = [self.emotions[i] for i in range(8) if emotion_output[i] == 1]
         return emotion
 
-    def __call__(self, text):
-        segments = text.splitlines()
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        segments = analyzed.transcript.splitlines()
         sentiments_and_emotions = []
 
         for segment in segments:
             sentiment = self.get_sentiment(segment)
             emotion = self.get_emotion(segment)
             sentiments_and_emotions.append((sentiment, emotion))
-
-        return sentiments_and_emotions
+        analyzed.__setattr__("sentiments_and_emotions", sentiments_and_emotions)
+        return analyzed

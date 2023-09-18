@@ -38,7 +38,7 @@ def init_pipeline():
     pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
     pipeline_.add_step(WhisperTranscriber(name='transcriber'))
     pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
-    # pipeline_.add_step(SentimentAnalyzer(name='sentiment_analyzer'))
+    # pipeline_.add_step(SentimentAnalyzer(name='text_sentiment_analyzer'))
     # pipeline_.add_step(Yamnet(name='audio_classifier'))
     # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
     pipeline_.add_step(ClapClassifier(name='clap_classifier'))

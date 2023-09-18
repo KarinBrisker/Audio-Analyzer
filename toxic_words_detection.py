@@ -1,3 +1,4 @@
+from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
 
@@ -6,7 +7,7 @@ class ToxicWordsDetector(Pipe):
         super().__init__(name=name)
         self.toxic_words = open("resources/toxic.json", "r").read()
 
-    def __call__(self, analyzed):
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         toxic_mentions = []
         transcript = analyzed.transcript
         for segment in transcript:
