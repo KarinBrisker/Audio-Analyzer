@@ -1,6 +1,6 @@
 # Audio Analyzer
 ### Description:
-This project is a pipeline for audio analysis.
+Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehensive solution for audio processing. The project is designed to be modular and scalable, allowing users to easily add new features and functionalities.
 
 ### Solution Diagram:
 
