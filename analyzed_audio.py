@@ -12,9 +12,10 @@ class AnalyzedAudio:
         self.sentiment = None
         self.day_part = None
         self.background_noise = None
-        self.speaker = None
+        self.diarization = None
         self.transcript = None
         self.ranked = None
+        self.toxic_words = None
 
     def __setattr__(self, key, value):
         self.__dict__[key] = value

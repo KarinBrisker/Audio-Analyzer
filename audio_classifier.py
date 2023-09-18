@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_io as tfio
 
+from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
 
@@ -27,8 +28,8 @@ class Yamnet(Pipe):
         wav = tfio.audio.resample(wav, rate_in=sample_rate, rate_out=16000)
         return wav
 
-    def __call__(self, filename):
-        testing_wav_data = self.load_wav_16k_mono(filename)
+    def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        testing_wav_data = self.load_wav_16k_mono(analyzed.path)
         scores, embeddings, spectrogram = self.yamnet_model(testing_wav_data)
         class_scores = tf.reduce_mean(scores, axis=0)
         top_class = tf.math.argmax(class_scores)
@@ -37,7 +38,5 @@ class Yamnet(Pipe):
         print(f'The main sound is: {inferred_class}')
         print(f'The embeddings shape: {embeddings.shape}')
 
-
-if __name__ == '__main__':
-    yamnet = Yamnet()
-    yamnet('path/to/audio/file.mp3')
+        analyzed.__setattr__("yamnet", inferred_class)
+        return analyzed

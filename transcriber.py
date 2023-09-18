@@ -10,7 +10,7 @@ from pipeline import Pipe
 class WhisperTranscriber(Pipe):
     def __init__(self, name, language="he"):
         super().__init__(name=name)
-        whisper_model = "large"
+        whisper_model = "base"
         self.model = whisper.load_model(whisper_model)
         self.tokenizer = get_tokenizer(multilingual=True, language=language)
         print("Whisper model loaded.")

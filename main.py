@@ -5,10 +5,13 @@ import librosa
 
 from analyzed_audio import AnalyzedAudio
 from audio_enhancer import AudioEnhancer
+from clap_model import ClapClassifier
 # from audio_classifier import Yamnet
 from noise_reducer import NoiseReducer
 from output_ranker import Ranker
 from pipeline import Pipeline
+from speaker_diarization import SpeakerDiarization
+from toxic_words_detection import ToxicWordsDetector
 from transcriber import WhisperTranscriber
 
 
@@ -34,8 +37,11 @@ def init_pipeline():
     pipeline_.add_step(NoiseReducer(name='noise_reducer'))
     pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
     pipeline_.add_step(WhisperTranscriber(name='transcriber'))
+    pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
     # pipeline_.add_step(SentimentAnalyzer(name='sentiment_analyzer'))
     # pipeline_.add_step(Yamnet(name='audio_classifier'))
+    # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
+    pipeline_.add_step(ClapClassifier(name='clap_classifier'))
     pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
 

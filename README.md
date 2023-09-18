@@ -8,18 +8,29 @@ This project is a pipeline for audio analysis.
 
 
 ### list of tasks:
+- verify each step
+- not assuming language
+- using CLAP model
+
+
 #### audio:
 - [X] background noise classification
 - [X] audio enhancement
 - [ ] speaker diarization [Link1](https://github.com/facebookresearch/svoice), [Link2](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-stt-diarization?tabs=windows&pivots=programming-language-python)
-- [ ] cleaning dead segments  -  risky?
 - [ ] tone classification
+
 
 #### text:
 - [X] text extraction
 - [X] sentiment analysis
-- [ ] toxic words
+- [ ] toxic words detection
+
+
+---
+#### future tasks:
 - [ ] text summarization
+- [ ] cleaning dead segments
+- [ ] audio segmentation - part of day
 
 ### data:
 - [ ] [FSD50K](https://annotator.freesound.org/fsd/release/FSD50K/)
@@ -30,10 +41,10 @@ This project is a pipeline for audio analysis.
 
 ### other:
 1. run pipreqs to generate requirements.txt
-```bash
-pipreqs . --force
-```
-1. run:
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pipreqs . --force
+    ```
+2. run:
+    ```bash
+    pip install -r requirements.txt
+    ```
