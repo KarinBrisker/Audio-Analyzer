@@ -1,9 +1,11 @@
 from transformers import AutoTokenizer, AutoModel, pipeline
 from HeBERT.src.HebEMO import HebEMO
+from pipeline import Pipe
 
 
-class SentimentAnalyzer:
-    def __init__(self):
+class SentimentAnalyzer(Pipe):
+    def __init__(self, name):
+        super().__init__(name)
         self.tokenizer = AutoTokenizer.from_pretrained("avichr/heBERT_sentiment_analysis")
         self.model = AutoModel.from_pretrained("avichr/heBERT_sentiment_analysis")
         self.analyzer = pipeline(

@@ -1,9 +1,11 @@
+from pipeline import Pipe
 from time_utils import TimeUtils
 
 
-class Ranker:
-    def __init__(self):
-        self.top_k = 10
+class Ranker(Pipe):
+    def __init__(self, name, top_k=10):
+        super().__init__(name)
+        self.top_k = top_k
         self.features = []
 
     def rank(self, features: dict):
@@ -62,3 +64,6 @@ class Ranker:
             if start_time < span['end'] and end_time > span['start']:
                 return True
         return False
+
+    def __call__(self, *args, **kwargs):
+        return self.rank(*args, **kwargs)

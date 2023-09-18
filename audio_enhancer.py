@@ -1,7 +1,9 @@
 from pydub import AudioSegment
 
+from pipeline import Pipe
 
-class AudioEnhancer:
+
+class AudioEnhancer(Pipe):
     def __call__(self, input_audio_path: str, output_audio_path: str, volume: int = 10) -> None:
         sound = AudioSegment.from_file(input_audio_path)
         louder_sound = sound + volume

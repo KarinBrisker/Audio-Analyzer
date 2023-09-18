@@ -3,8 +3,10 @@ import noisereduce as nr
 import soundfile as sf
 import numpy as np
 
+from pipeline import Pipe
 
-class NoiseReducer:
+
+class NoiseReducer(Pipe):
     def __call__(self, input_audio_path: str, duration: float = None) -> (np.ndarray, int, np.ndarray):
         audio_, sr_ = librosa.load(input_audio_path, sr=None, duration=duration)
         int_sr_ = int(sr_)

@@ -3,10 +3,13 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_io as tfio
 
+from pipeline import Pipe
 
-class Yamnet:
+
+class Yamnet(Pipe):
     # https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
-    def __init__(self):
+    def __init__(self, name):
+        super().__init__(name)
         self.yamnet_model_handle = 'https://tfhub.dev/google/yamnet/1'
         self.yamnet_model = hub.load(self.yamnet_model_handle)
         self.class_map_path = self.yamnet_model.class_map_path().numpy().decode('utf-8')

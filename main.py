@@ -4,7 +4,12 @@ import json
 import librosa
 
 from audio_analyzer import AudioAnalyzer
+from audio_enhancer import AudioEnhancer
+from audio_classifier import Yamnet
+from noise_reducer import NoiseReducer
 from output_ranker import Ranker
+from pipeline import Pipeline, Pipe
+from sentiment_analyzer import SentimentAnalyzer
 
 
 def load_audio_file(path):
@@ -20,38 +25,28 @@ def load_json_file(path):
     return data
 
 
+def init_pipeline():
+    pipeline_ = Pipeline(pipe_name='audio_indexer')
+
+    pipeline_.add_step(NoiseReducer(name='noise_reducer'))
+    pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
+    pipeline_.add_step(SentimentAnalyzer(name='sentiment_analyzer'))
+    pipeline_.add_step(Yamnet(name='audio_classifier'))
+    pipeline_.add_step(Ranker(name='ranker'))
+    return pipeline_
+
+
 def main():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('raw_audio_path', type=str, help='the path to the raw audio file')
-    parser.add_argument('clean_audio_path', type=str, help='the path to the clean audio file after the preprocess')
-    parser.add_argument('video_indexer_json', type=str, help='json object created by the video indexer')
-    parser.add_argument('metadata_json', type=str, help='json object with metadata about the audio file')
+    parser.add_argument('metadata', type=str, help='json object with metadata about the audio file', required=False)
     args = parser.parse_args()
+
+    pipeline = init_pipeline()
 
     # Load the audio files
     raw_audio, raw_sr = load_audio_file(args.raw_audio_path)
-    clean_audio, clean_sr = load_audio_file(args.clean_audio_path)
-
-    # If video indexer json is a path then load it
-    if args.video_indexer_json.endswith('.json'):
-        args.video_indexer_json = load_json_file(args.video_indexer_json)
-
-    vi_post_processor = VideoIndexerPostProcessor()
-    audio_analyzer = AudioAnalyzer(raw_audio, raw_sr, clean_audio, clean_sr)
-    ranker = Ranker()
-
-    # Clean json file
-    nlp_json = vi_post_processor(args.video_indexer_json, args.metadata_json)
-
-    # Analyze the audio and return json object
-    audio_json = audio_analyzer()
-
-    # Merge the jsons
-    final_json = {**audio_json, **nlp_json}
-
-    output = ranker.rank(final_json)
-
-    print(output)
+    pipeline(raw_audio, raw_sr, args.metadata)
 
 
 if __name__ == '__main__':
