@@ -10,7 +10,7 @@ from clap_model import ClapClassifier
 from noise_reducer import NoiseReducer
 from output_ranker import Ranker
 from pipeline import Pipeline
-from speaker_diarization import SpeakerDiarization
+# from speaker_diarization import SpeakerDiarization
 from toxic_words_detection import ToxicWordsDetector
 from transcriber import WhisperTranscriber
 
