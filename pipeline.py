@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
+from tqdm import tqdm
 
 from analyzed_audio import AnalyzedAudio
 
@@ -15,9 +16,10 @@ class Pipeline:
     def __call__(self, updated_audio: AnalyzedAudio):
         print(f"Running pipeline: {self.pipe_name}")
         for i, step in enumerate(self.steps, start=1):
-            print(f"{i}.    Running step: {step.name}")
-            updated_audio = step(updated_audio)
-            print(f"{i}.    Finished step: {step.name}")
+            step_description = f"Step {i}: {step.name}"
+            with tqdm(total=1, desc=step_description) as pbar:
+                updated_audio = step(updated_audio)
+                pbar.update(1)
         return updated_audio
 
 
