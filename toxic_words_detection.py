@@ -1,3 +1,5 @@
+import json
+
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
@@ -5,23 +7,25 @@ from pipeline import Pipe
 class ToxicWordsDetector(Pipe):
     def __init__(self, name):
         super().__init__(name=name)
-        self.toxic_words = open("resources/toxic.json", "r").read()
+        self.toxic_words = json.load(open("resources/toxic.json", "r"))
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         mentions = []
-        lines = analyzed.transcript.split("\n")
+        transcript = open("resources/samples/transcript+bad_words.txt", "r").read()
+        lines = transcript.split("\n")
 
         for line in lines:
-            words = line.split()
+            transcript_words = line.split()
+            transcript_words = [word.strip(".,!?") for word in transcript_words]
             i = 0
 
-            while i < len(words):
+            while i < len(transcript_words):
                 found_problem = False
                 # Check for problematic phrases
                 for phrase in self.toxic_words:
                     phrase_words = phrase.split()
                     # remove punctuation from phrase
-                    phrase_to_check = [word.strip(".,!?") for word in words[i:i + len(phrase_words)]]
+                    phrase_to_check = transcript_words[i:i + len(phrase_words)]
 
                     if phrase_to_check == phrase_words:
                         mentions.append(' '.join(phrase_words))

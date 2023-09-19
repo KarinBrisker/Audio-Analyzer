@@ -36,8 +36,8 @@ def init_pipeline():
 
     pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
     pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
-    pipeline_.add_step(WhisperTranscriber(name='transcriber'))
-    pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
+    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))
+    pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
     # pipeline_.add_step(SentimentAnalyzer(name='text_sentiment_analyzer'))
     # pipeline_.add_step(Yamnet(name='audio_classifier'))
     # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
