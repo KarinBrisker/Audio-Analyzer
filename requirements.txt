@@ -1,8 +1,8 @@
-gradio==3.44.3
+gradio==3.44.4
 librosa==0.10.1
 matplotlib==3.7.2
 noisereduce==2.0.1
-numpy==1.24.3
+numpy==1.23.5
 openai_whisper==20230314
 pandas==2.0.3
 pyannote.audio==2.1.1
