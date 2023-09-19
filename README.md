@@ -11,7 +11,7 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 - verify each step
 - not assuming language
 - using CLAP model
-
+- check the model on very long audio input = scale [~8 hours]
 
 #### audio:
 - [X] background noise classification
