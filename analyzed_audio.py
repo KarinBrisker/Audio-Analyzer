@@ -16,6 +16,7 @@ class AnalyzedAudio:
         self.transcript = None
         self.ranked = None
         self.toxic_words = None
+        self.similarity_scores = None
 
     def __setattr__(self, key, value):
         self.__dict__[key] = value
