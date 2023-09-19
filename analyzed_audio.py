@@ -1,9 +1,14 @@
+import os
+from pathlib import Path
+
 import numpy as np
 
 
 class AnalyzedAudio:
     def __init__(self, path: str, audio: np.ndarray, sr: int, metadata: dict = None):
-        self.path = path
+        self.path = Path(path)
+        self.base_path = Path(os.path.dirname(path))
+        self.filename = os.path.basename(path).strip(".wav")
         self.metadata = metadata
         self.audio = audio
         self.sr = sr

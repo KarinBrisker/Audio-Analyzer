@@ -5,7 +5,7 @@ import librosa
 
 from analyzed_audio import AnalyzedAudio
 from audio_enhancer import AudioEnhancer
-from clap_model import ClapClassifier
+# from clap_model import ClapClassifier
 # from audio_classifier import Yamnet
 from noise_reducer import NoiseReducer
 from output_ranker import Ranker
@@ -41,7 +41,7 @@ def init_pipeline():
     # pipeline_.add_step(SentimentAnalyzer(name='text_sentiment_analyzer'))
     # pipeline_.add_step(Yamnet(name='audio_classifier'))
     # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
-    pipeline_.add_step(ClapClassifier(name='clap_classifier'))
+    # pipeline_.add_step(ClapClassifier(name='clap_classifier'))
     pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
 

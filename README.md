@@ -48,3 +48,18 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
     ```bash
     pip install -r requirements.txt
     ```
+   
+
+bugfixes:
+- https://stackoverflow.com/questions/67069960/pydub-error-loading-file-unknown-encoder-pcm-s4le
+   
+   code:
+   ```python
+   import soundfile as sf
+   
+   #Load the original audio file (in IMA ADPCM format)
+   original_audio, sample_rate = sf.read('original.wav')
+   
+   #Save the audio with the desired format (PCM_16)
+   sf.write('output.wav', original_audio, sample_rate, subtype='PCM_16')
+   ```

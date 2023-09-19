@@ -1,3 +1,5 @@
+import json
+
 import torch
 
 from analyzed_audio import AnalyzedAudio
@@ -11,10 +13,8 @@ class ClapClassifier(Pipe):
         self.processor = ClapProcessor.from_pretrained("laion/clap-htsat-fused")
         self.audio_model = ClapAudioModel.from_pretrained("laion/clap-htsat-fused")
         self.text_model = ClapTextModel.from_pretrained("laion/clap-htsat-fused")
-        self.classes = ["violence", "screaming", "gunshot", "explosion", "car", "glass", "music", "animal", "human",
-                        "nature", "other", "crying", "water", "silence", "applause", "laughter", "whispering",
-                        "clapping", "anger", "falling", "footsteps", "door", "knocking", "phone", "alarm", "bell",
-                        "siren", "horn", "engine", "baby", "speech", "fear"]
+        # from json file
+        self.classes = json.load(open("classes.json", "r"))
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         # Process the audio file and text description
