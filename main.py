@@ -34,8 +34,8 @@ def load_json_file(path):
 def init_pipeline():
     pipeline_ = Pipeline(pipe_name='audio_indexer')
 
-    pipeline_.add_step(NoiseReducer(name='noise_reducer'))
-    pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
+    pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
+    pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
     pipeline_.add_step(WhisperTranscriber(name='transcriber'))
     pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
     # pipeline_.add_step(SentimentAnalyzer(name='text_sentiment_analyzer'))
