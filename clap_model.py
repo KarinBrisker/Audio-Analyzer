@@ -36,9 +36,3 @@ class ClapClassifier(Pipe):
 
         analyzed.__setattr__("similarity_scores", similarity_scores)
         return analyzed
-
-
-
-
-
-print(f"The similarity between the audio segment and the text description is: {similarity.item()}")
