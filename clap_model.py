@@ -4,35 +4,28 @@ import torch
 
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
-from transformers import ClapAudioModel, ClapTextModel, ClapProcessor
+from transformers import ClapAudioModel, ClapTextModel, ClapProcessor, AutoProcessor
+from transformers import AutoProcessor, ClapModel
 
 
 class ClapClassifier(Pipe):
     def __init__(self, name):
         super().__init__(name=name)
-        self.processor = ClapProcessor.from_pretrained("laion/clap-htsat-fused")
-        self.audio_model = ClapAudioModel.from_pretrained("laion/clap-htsat-fused")
-        self.text_model = ClapTextModel.from_pretrained("laion/clap-htsat-fused")
+        self.processor = AutoProcessor.from_pretrained("laion/clap-htsat-unfused")
+        self.model = ClapModel.from_pretrained("laion/clap-htsat-unfused")
         # from json file
-        self.classes = json.load(open("classes.json", "r"))
+        self.classes = json.load(open("resources/clap_classes.json", "r"))
+
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        # Process the audio file and text description
-        inputs_audio = self.processor(analyzed.path, sampling_rate=16000, return_tensors="pt", padding=True)
+        inputs = self.processor(text=self.classes, audios=analyzed.audio, return_tensors="pt", padding=True)
 
-        # Encode the audio file
-        with torch.no_grad():
-            embeddings_audio = self.audio_model(**inputs_audio).last_hidden_state
+        outputs = self.model(**inputs)
+        logits_per_audio = outputs.logits_per_audio  # this is the audio-text similarity score
+        probs = logits_per_audio.softmax(dim=-1)  # we can take the softmax to get the label probabilities
+        _, topk_indices = torch.topk(probs, 10, dim=-1)
+        topk_indices = topk_indices.tolist()[0]
+        topk_class_names = [self.classes[i] for i in topk_indices]
 
-        similarity_scores = dict.fromkeys(self.classes)
-
-        # Process each text description, encode it, and compute its similarity with the audio segment
-        for sound_class in self.classes:
-            inputs_text = self.processor(sound_class, return_tensors="pt", padding=True)
-            with torch.no_grad():
-                embeddings_text = self.text_model(**inputs_text).last_hidden_state
-            similarity = torch.nn.functional.cosine_similarity(embeddings_audio, embeddings_text)
-            similarity_scores[sound_class] = similarity.item()
-
-        analyzed.__setattr__("similarity_scores", similarity_scores)
+        analyzed.__setattr__("similarity_scores", topk_class_names)
         return analyzed

@@ -6,6 +6,7 @@ import librosa
 from analyzed_audio import AnalyzedAudio
 from audio_classifier import Yamnet
 from audio_enhancer import AudioEnhancer
+from clap_model import ClapClassifier
 # from clap_model import ClapClassifier
 # from audio_classifier import Yamnet
 from noise_reducer import NoiseReducer
@@ -43,8 +44,8 @@ def init_pipeline():
     # pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
     # pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
     # pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
-    # pipeline_.add_step(ClapClassifier(name='clap_classifier'))
+    # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # too slow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # pipeline_.add_step(ClapClassifier(name='clap_classifier'))    # implemented: V
     pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
 
@@ -61,7 +62,7 @@ def main():
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
     input_audio = AnalyzedAudio(args.raw_audio_path, raw_audio, int(sample_rate), metadata)
-    with open("resources/transcript+bad_words.txt", "r") as f:
+    with open("resources/samples/transcript+bad_words.txt", "r") as f:
         transcript = f.read()
     input_audio.__setattr__("transcript", transcript)
     output_audio = pipeline(input_audio)

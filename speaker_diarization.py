@@ -23,7 +23,7 @@ class SpeakerDiarization(Pipe):
                                                     use_auth_token=os.environ.get("HF_TOKEN"))
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        diarization = self.sd_pipeline(analyzed.path, num_speakers=5)
+        diarization = self.sd_pipeline(analyzed.path, num_speakers=4)
         # 5. print the result
         for turn, _, speaker in diarization.itertracks(yield_label=True):
             print(f"start={turn.start:.1f}s stop={turn.end:.1f}s speaker_{speaker}")

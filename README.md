@@ -13,6 +13,8 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 - using CLAP model
 - check the model on very long audio input = scale [~8 hours]
 - create a directory for each run to debug with time stamp
+- split into 2 minutes segments and extract features from each segment
+
 
 #### audio:
 - [X] background noise classification
@@ -24,7 +26,7 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 #### text:
 - [X] text extraction
 - [X] sentiment analysis
-- [ ] toxic words detection
+- [X] toxic words detection
 
 
 ---
@@ -66,7 +68,9 @@ bugfixes:
    ```
   
 - https://github.com/tensorflow/tensorflow/issues/60569
-code:
+
+    code:
+
    ```bash
   bash ~/Downloads/Miniconda3-latest-MacOSX-arm64.sh -b -p $HOME/miniconda
   source ~/miniconda/bin/activate
