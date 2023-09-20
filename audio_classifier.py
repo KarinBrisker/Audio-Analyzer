@@ -29,7 +29,7 @@ class Yamnet(Pipe):
         return wav
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        testing_wav_data = self.load_wav_16k_mono(analyzed.path)
+        testing_wav_data = self.load_wav_16k_mono(str(analyzed.path))
         scores, embeddings, spectrogram = self.yamnet_model(testing_wav_data)
         class_scores = tf.reduce_mean(scores, axis=0)
         top_class = tf.math.argmax(class_scores)
