@@ -10,6 +10,7 @@ from audio_enhancer import AudioEnhancer
 from noise_reducer import NoiseReducer
 from output_ranker import Ranker
 from pipeline import Pipeline
+from sentiment_analyzer import TextualSentimentAnalyzer
 # from speaker_diarization import SpeakerDiarization
 from toxic_words_detection import ToxicWordsDetector
 from transcriber import WhisperTranscriber
@@ -36,9 +37,9 @@ def init_pipeline():
 
     pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
     pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
-    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))
+    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # workd badly :(
     pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
-    # pipeline_.add_step(SentimentAnalyzer(name='text_sentiment_analyzer'))
+    pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
     # pipeline_.add_step(Yamnet(name='audio_classifier'))
     # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
     # pipeline_.add_step(ClapClassifier(name='clap_classifier'))

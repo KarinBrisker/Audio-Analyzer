@@ -11,7 +11,7 @@ class ToxicWordsDetector(Pipe):
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         mentions = []
-        transcript = open("resources/samples/transcript+bad_words.txt", "r").read()
+        transcript = analyzed.transcript
         lines = transcript.split("\n")
 
         for line in lines:
@@ -36,6 +36,6 @@ class ToxicWordsDetector(Pipe):
                 if not found_problem:
                     i += 1
 
-        analyzed.__setattr__("toxic_words", mentions)
+        analyzed.__setattr__("toxic_mentions", mentions)
 
         return analyzed

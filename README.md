@@ -64,3 +64,11 @@ bugfixes:
    #Save the audio with the desired format (PCM_16)
    sf.write('output.wav', original_audio, sample_rate, subtype='PCM_16')
    ```
+  
+- https://github.com/tensorflow/tensorflow/issues/60569
+code:
+   ```bash
+  bash ~/Downloads/Miniconda3-latest-MacOSX-arm64.sh -b -p $HOME/miniconda
+  source ~/miniconda/bin/activate
+  conda install -c apple tensorflow-deps
+```
