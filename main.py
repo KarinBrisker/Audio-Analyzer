@@ -38,13 +38,13 @@ def load_json_file(path):
 def init_pipeline():
     pipeline_ = Pipeline(pipe_name='audio_indexer')
 
-    pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
-    pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
-    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # workd badly :( ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
+    # pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
+    pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # workd badly :( ~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
     # pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
-    # pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # too slow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # too slow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # pipeline_.add_step(ClapClassifier(name='clap_classifier'))    # implemented: V
     pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
@@ -61,7 +61,7 @@ def main():
     # Load the audio files
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
-    input_audio = AnalyzedAudio(args.raw_audio_path, raw_audio, int(sample_rate), metadata)
+    input_audio = AnalyzedAudio(path=args.raw_audio_path, audio=raw_audio, sr=int(sample_rate), metadata=metadata)
     with open("resources/samples/transcript+bad_words.txt", "r") as f:
         transcript = f.read()
     input_audio.__setattr__("transcript", transcript)
