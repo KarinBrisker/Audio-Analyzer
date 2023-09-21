@@ -19,9 +19,6 @@ from toxic_words_detection import ToxicWordsDetector
 from transcriber import WhisperTranscriber
 
 
-# from sentiment_analyzer import SentimentAnalyzer
-
-
 def load_audio_file(path):
     """Load an audio file with librosa and return the audio and sample rate."""
     audio, sr = librosa.load(path, sr=None)
@@ -40,13 +37,13 @@ def init_pipeline():
 
     # pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
     # pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
-    pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # workd badly :( ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # implemented: V
     # pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
     # pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
     pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # too slow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # pipeline_.add_step(ClapClassifier(name='clap_classifier'))    # implemented: V
-    pipeline_.add_step(Ranker(name='ranker'))
+    # pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
 
 
@@ -62,9 +59,6 @@ def main():
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
     input_audio = AnalyzedAudio(path=args.raw_audio_path, audio=raw_audio, sr=int(sample_rate), metadata=metadata)
-    with open("resources/samples/transcript+bad_words.txt", "r") as f:
-        transcript = f.read()
-    input_audio.__setattr__("transcript", transcript)
     output_audio = pipeline(input_audio)
     return output_audio
 
