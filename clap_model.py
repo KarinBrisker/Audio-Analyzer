@@ -18,7 +18,8 @@ class ClapClassifier(Pipe):
 
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        inputs = self.processor(text=self.classes, audios=analyzed.audio, return_tensors="pt", padding=True)
+        inputs = self.processor(text=self.classes, audios=analyzed.audio,
+                                return_tensors="pt", padding=True, sampling_rate=analyzed.sr)
 
         outputs = self.model(**inputs)
         logits_per_audio = outputs.logits_per_audio  # this is the audio-text similarity score
