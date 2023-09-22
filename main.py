@@ -35,15 +35,15 @@ def load_json_file(path):
 def init_pipeline():
     pipeline_ = Pipeline(pipe_name='audio_indexer')
 
-    # pipeline_.add_step(NoiseReducer(name='noise_reducer'))      # implemented: V
-    # pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))    # implemented: V
-    # pipeline_.add_step(WhisperTranscriber(name='transcriber'))  # implemented: V
-    # pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
-    # pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
-    pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # implemented: V
-    # pipeline_.add_step(ClapClassifier(name='clap_classifier'))    # implemented: V
-    # pipeline_.add_step(Ranker(name='ranker'))
+    pipeline_.add_step(NoiseReducer(name='noise_reducer'))
+    pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
+    pipeline_.add_step(WhisperTranscriber(name='transcriber'))
+    pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
+    pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))
+    pipeline_.add_step(Yamnet(name='audio_classifier'))
+    pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
+    pipeline_.add_step(ClapClassifier(name='clap_classifier'))
+    pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
 
 

@@ -1,11 +1,15 @@
 import pandas as pd
+import scipy
 import tensorflow as tf
 import tensorflow_hub as hub
-import tensorflow_io as tfio
 
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
+from scipy.io import wavfile
+import numpy as np
+import wave
+import scipy.signal
 
 class Yamnet(Pipe):
     # https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
@@ -16,24 +20,40 @@ class Yamnet(Pipe):
         self.class_map_path = self.yamnet_model.class_map_path().numpy().decode('utf-8')
         self.class_names = list(pd.read_csv(self.class_map_path)['display_name'])
 
-    @tf.function
-    def load_wav_16k_mono(self, filename):
+    def load_wav(self, filename):
         """ Load a WAV file, convert it to a float tensor, resample to 16 kHz single-channel audio. """
-        file_contents = tf.io.read_file(filename)
-        wav, sample_rate = tf.audio.decode_wav(
-            file_contents,
-            desired_channels=1)
-        wav = tf.squeeze(wav, axis=-1)
-        sample_rate = tf.cast(sample_rate, dtype=tf.int64)
-        wav = tfio.audio.resample(wav, rate_in=sample_rate, rate_out=16000)
+        with wave.open(filename, 'rb') as wav_file:
+            sample_rate = wav_file.getframerate()
+            wav = np.frombuffer(wav_file.readframes(-1), dtype=np.int16)
+            wav = wav.astype(np.float32) / 32768  # Convert to [-1.0, 1.0]
+
+        # Check if audio is stereo
+        if len(wav.shape) > 1:
+            wav = np.mean(wav, axis=1)  # Convert stereo to mono by averaging channels
+
+        # Resample to 16 kHz
+        if sample_rate != 16000:
+            wav = scipy.signal.resample_poly(wav, up=16000, down=sample_rate)
+
         return wav
 
+    @staticmethod
+    def get_wav_format(filename):
+        with wave.open(filename, 'rb') as wav_file:
+            sample_width = wav_file.getsampwidth()
+            n_channels = wav_file.getnchannels()
+        return sample_width * 8, n_channels
+
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        testing_wav_data = self.load_wav_16k_mono(str(analyzed.path))
-        scores, embeddings, spectrogram = self.yamnet_model(testing_wav_data)
-        class_scores = tf.reduce_mean(scores, axis=0)
-        top_class = tf.math.argmax(class_scores)
-        inferred_class = self.class_names[top_class]
+        file_path = str(analyzed.path)
+        bit_depth, channels = self.get_wav_format(file_path)
+        print(f'The file is {bit_depth}-bit and has {channels} channel(s).')
+
+        wav_data = self.load_wav(str(analyzed.path))
+        # Run the model, check the output.
+        scores, embeddings, spectrogram = self.yamnet_model(wav_data)
+        scores_np = scores.numpy()
+        inferred_class = self.class_names[scores_np.mean(axis=0).argmax()]
 
         print(f'The main sound is: {inferred_class}')
         print(f'The embeddings shape: {embeddings.shape}')
