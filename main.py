@@ -41,7 +41,7 @@ def init_pipeline():
     # pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))     # implemented: V
     # pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))   # implemented: V
     pipeline_.add_step(Yamnet(name='audio_classifier'))  # not working ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # too slow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))  # implemented: V
     # pipeline_.add_step(ClapClassifier(name='clap_classifier'))    # implemented: V
     # pipeline_.add_step(Ranker(name='ranker'))
     return pipeline_
