@@ -17,7 +17,8 @@ class WhisperTranscriber(Pipe):
     def transcribe_audio(self, analyzed: AnalyzedAudio):
         transcript = self.model.transcribe(str(analyzed.path), language="he", fp16=False)
         segments = transcript['segments']
-        analyzed.__setattr__("transcript", transcript['text'])
+        transcript_text = "\n".join([segment['text'] for segment in segments])
+        analyzed.__setattr__("transcript", transcript_text)
         analyzed.__setattr__("segments", segments)
         transcript_path = os.path.join(analyzed.base_path, analyzed.filename + "_transcript.srt")
         self.generate_srt_file(segments, transcript_path)

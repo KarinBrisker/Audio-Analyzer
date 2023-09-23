@@ -1,7 +1,6 @@
 import os
 
 from pydub import AudioSegment
-import soundfile as sf
 
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe

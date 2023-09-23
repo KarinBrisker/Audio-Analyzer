@@ -7,20 +7,20 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 ![pipeline_diagram](https://github.com/KarinBrisker/audio_analyzer/assets/19929107/d8813349-42e0-4a1a-8f16-a3ee9cdfae60)
 
 
-### list of tasks:
-- verify each step
-- not assuming language
-- using CLAP model
-- check the model on very long audio input = scale [~8 hours]
-- create a directory for each run to debug with time stamp
-- split into 2 minutes segments and extract features from each segment
+### to-do:
+- [ ] check on large audio files
+- [ ] split to 2 minutes segments
+- [ ] extract features from each segment [make it parallel]
+- [ ] save features to csv
+- [ ] not assuming language
+- [ ] create a directory for each run to debug with time stamp
 
 
 #### audio:
 - [X] background noise classification
 - [X] audio enhancement
-- [ ] speaker diarization [Link1](https://github.com/facebookresearch/svoice), [Link2](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-stt-diarization?tabs=windows&pivots=programming-language-python)
-- [ ] tone classification
+- [X] speaker diarization [Link1](https://github.com/facebookresearch/svoice), [Link2](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-stt-diarization?tabs=windows&pivots=programming-language-python)
+- [X] tone classification
 
 
 #### text:
@@ -30,17 +30,17 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 
 
 ---
-#### future tasks:
+#### future tasks to consider:
 - [ ] text summarization
 - [ ] cleaning dead segments
 - [ ] audio segmentation - part of day
 
 ### data:
-- [ ] [FSD50K](https://annotator.freesound.org/fsd/release/FSD50K/)
-- [ ] [AudioSet](https://research.google.com/audioset/)
+- [FSD50K](https://annotator.freesound.org/fsd/release/FSD50K/)
+- [AudioSet](https://research.google.com/audioset/)
 
 ### models:
-- [ ] [CLAP](https://arxiv.org/pdf/2206.04769)
+- [CLAP](https://arxiv.org/pdf/2206.04769)
 
 ### other:
 1. run pipreqs to generate requirements.txt

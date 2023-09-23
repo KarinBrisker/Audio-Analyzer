@@ -7,16 +7,14 @@ from analyzed_audio import AnalyzedAudio
 from audio_classifier import Yamnet
 from audio_enhancer import AudioEnhancer
 from clap_model import ClapClassifier
-# from clap_model import ClapClassifier
-# from audio_classifier import Yamnet
 from noise_reducer import NoiseReducer
 from output_ranker import Ranker
 from pipeline import Pipeline
 from sentiment_analyzer import TextualSentimentAnalyzer
 from speaker_diarization import SpeakerDiarization
-# from speaker_diarization import SpeakerDiarization
 from toxic_words_detection import ToxicWordsDetector
 from transcriber import WhisperTranscriber
+import soundfile as sf
 
 
 def load_audio_file(path):
@@ -54,6 +52,16 @@ def main():
     args = parser.parse_args()
 
     pipeline = init_pipeline()
+
+
+    f = sf.SoundFile(args.raw_audio_path)
+    # check if the audio file is in IMA_ADPCM format
+    if f.subtype == 'IMA_ADPCM':
+        print('bad format - IMA_ADPCM')
+        data = f.read(dtype='int16')
+        new_name = args.raw_audio_path.replace('.wav', '_new.wav').replace('.WAV', '_new.wav')
+        sf.write(new_name, data, f.samplerate, subtype='PCM_16')
+        args.raw_audio_path = new_name
 
     # Load the audio files
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)

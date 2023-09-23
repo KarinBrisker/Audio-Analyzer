@@ -12,16 +12,16 @@ class TextualSentimentAnalyzer(Pipe):
         self.tokenizer = AutoTokenizer.from_pretrained("avichr/heBERT_sentiment_analysis")
         self.model = AutoModel.from_pretrained("avichr/heBERT_sentiment_analysis")
         self.analyzer = pipeline(
-            "sentiment-analysis",
+            task="sentiment-analysis",
             model="avichr/heBERT_sentiment_analysis",
             tokenizer="avichr/heBERT_sentiment_analysis",
-            return_all_scores=True
+            top_k=None
         )
         self.HebEMO_model = HebEMO()
         self.emotions = ['anticipation', 'joy', 'trust', 'fear', 'surprise', 'anger', 'sadness', 'disgust']
 
     def get_sentiment(self, text):
-        sentiment_scores = self.analyzer(text)
+        sentiment_scores = self.analyzer(text.splitlines())
         sentiment = max(sentiment_scores[0], key=lambda x: x['score'])['label']
         return sentiment
 
