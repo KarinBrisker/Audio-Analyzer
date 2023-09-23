@@ -23,10 +23,12 @@ class SpeakerDiarization(Pipe):
         self.num_speakers = 3
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        if analyzed.yamnet != "Silence":
-            # Replace "${AUDIO_FILE_PATH}" with the path to your audio file
+        segments = None
+        try:
             segments = self.diarization.diarize(str(analyzed.path))
             for turn in segments:
                 print(f"start={turn['start']:.1f}s stop={turn['end']:.1f}s speaker_{turn['label']}")
-        analyzed.__setattr__("diarization", self.diarization)
+        except Exception as e:
+            print(e)
+        analyzed.__setattr__("diarization", segments)
         return analyzed
