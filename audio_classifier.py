@@ -1,15 +1,14 @@
+import wave
+
+import numpy as np
 import pandas as pd
 import scipy
-import tensorflow as tf
+import scipy.signal
 import tensorflow_hub as hub
 
 from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
-from scipy.io import wavfile
-import numpy as np
-import wave
-import scipy.signal
 
 class Yamnet(Pipe):
     # https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
