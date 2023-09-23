@@ -53,10 +53,9 @@ def main():
     parser.add_argument('raw_audio_path', type=str, help='the path to the raw audio file')
     parser.add_argument('metadata', type=str, help='json object with metadata about the audio file')
     args = parser.parse_args()
+
     # Get current date and time
     now = datetime.now()
-
-    # Convert to string
     datetime_str = now.strftime("%Y-%m-%d-%H:%M:%S")
 
     output_path = os.path.join("resources/runs", datetime_str)
@@ -78,15 +77,20 @@ def main():
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
 
-    # split audio to chunks of 60 seconds
+    chunk_num_seconds = 60 * 5
+    # split audio to chunks of 'chunk_num_seconds' seconds
     chunks = []
-    for i in range(0, len(raw_audio), int(sample_rate * 60)):
-        chunks.append(raw_audio[i:i + sample_rate * 60])
+    for i in range(0, len(raw_audio), int(sample_rate * chunk_num_seconds)):
+        chunks.append(raw_audio[i:i + sample_rate * chunk_num_seconds])
 
     # save chunks to files
     for i in tqdm(range(len(chunks[:5]))):
-        chunk_output_path = os.path.join(output_path, args.raw_audio_path.split('/')[-1].replace('.wav', f'_{i}.wav').replace('.WAV', f'_{i}.wav'))
-        sf.write(chunk_output_path, chunks[i], sample_rate)
+        file_name = args.raw_audio_path.split('/')[-1]
+        file_name_without_extension = file_name.replace('.wav', '').replace('.WAV', '')
+        new_file_name = f'{file_name_without_extension}_{i}.wav'
+        chunk_output_path = os.path.join(output_path, new_file_name)
+
+        sf.write(chunk_output_path, chunks[i], int(sample_rate))
 
         # run pipeline on each chunk
         input_audio = AnalyzedAudio(path=chunk_output_path,
