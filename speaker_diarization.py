@@ -24,7 +24,7 @@ class SpeakerDiarization(Pipe):
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
         # Replace "${AUDIO_FILE_PATH}" with the path to your audio file
-        segments = self.diarization.diarize(str(analyzed.path), num_speakers=self.num_speakers)
+        segments = self.diarization.diarize(str(analyzed.path))
         for turn in segments:
             print(f"start={turn['start']:.1f}s stop={turn['end']:.1f}s speaker_{turn['label']}")
         analyzed.__setattr__("diarization", self.diarization)

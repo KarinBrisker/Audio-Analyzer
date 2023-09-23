@@ -8,12 +8,12 @@ Audio Analyzer is a pipeline for audio analysis that aims to provide a comprehen
 
 
 ### to-do:
-- [ ] check on large audio files
-- [ ] split to 2 minutes segments
+- [x] create a directory for each run to debug with time stamp
+- [x] check on large audio files
+- [X] split to 1 minute segments
 - [ ] extract features from each segment [make it parallel]
 - [ ] save features to csv
 - [ ] not assuming language
-- [ ] create a directory for each run to debug with time stamp
 
 
 #### audio:

@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 
 import librosa
+from tqdm import tqdm
 
 from analyzed_audio import AnalyzedAudio
 from audio_classifier import Yamnet
@@ -56,7 +57,7 @@ def main():
     now = datetime.now()
 
     # Convert to string
-    datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    datetime_str = now.strftime("%Y-%m-%d-%H:%M:%S")
 
     output_path = os.path.join("resources/runs", datetime_str)
     if not os.path.exists(output_path):
@@ -76,10 +77,25 @@ def main():
     # Load the audio files
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
-    input_audio = AnalyzedAudio(path=args.raw_audio_path, output_path=output_path, audio=raw_audio,
-                                sr=int(sample_rate), metadata=metadata)
-    output_audio = pipeline(input_audio)
-    return output_audio
+
+    # split audio to chunks of 60 seconds
+    chunks = []
+    for i in range(0, len(raw_audio), int(sample_rate * 60)):
+        chunks.append(raw_audio[i:i + sample_rate * 60])
+
+    # save chunks to files
+    for i in tqdm(range(len(chunks[:5]))):
+        chunk_output_path = os.path.join(output_path, args.raw_audio_path.split('/')[-1].replace('.wav', f'_{i}.wav').replace('.WAV', f'_{i}.wav'))
+        sf.write(chunk_output_path, chunks[i], sample_rate)
+
+        # run pipeline on each chunk
+        input_audio = AnalyzedAudio(path=chunk_output_path,
+                                    output_path=output_path, audio=chunks[i],
+                                    sr=int(sample_rate), metadata=metadata)
+        output_audio = pipeline(input_audio)
+        chunks[i] = output_audio
+
+    return chunks
 
 
 if __name__ == '__main__':
