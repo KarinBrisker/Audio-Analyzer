@@ -1,5 +1,7 @@
 import argparse
 import json
+import os
+from datetime import datetime
 
 import librosa
 
@@ -50,23 +52,32 @@ def main():
     parser.add_argument('raw_audio_path', type=str, help='the path to the raw audio file')
     parser.add_argument('metadata', type=str, help='json object with metadata about the audio file')
     args = parser.parse_args()
+    # Get current date and time
+    now = datetime.now()
+
+    # Convert to string
+    datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    output_path = os.path.join("resources/runs", datetime_str)
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
     pipeline = init_pipeline()
 
-
     f = sf.SoundFile(args.raw_audio_path)
-    # check if the audio file is in IMA_ADPCM format
+    # fix bad format
     if f.subtype == 'IMA_ADPCM':
         print('bad format - IMA_ADPCM')
         data = f.read(dtype='int16')
-        new_name = args.raw_audio_path.replace('.wav', '_new.wav').replace('.WAV', '_new.wav')
+        new_name = args.raw_audio_path.replace('.wav', '_fixed_format.wav').replace('.WAV', '_fixed_format.wav')
         sf.write(new_name, data, f.samplerate, subtype='PCM_16')
         args.raw_audio_path = new_name
 
     # Load the audio files
     raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
     metadata = load_json_file(args.metadata)
-    input_audio = AnalyzedAudio(path=args.raw_audio_path, audio=raw_audio, sr=int(sample_rate), metadata=metadata)
+    input_audio = AnalyzedAudio(path=args.raw_audio_path, output_path=output_path, audio=raw_audio,
+                                sr=int(sample_rate), metadata=metadata)
     output_audio = pipeline(input_audio)
     return output_audio
 

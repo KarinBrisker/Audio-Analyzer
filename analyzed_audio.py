@@ -5,8 +5,9 @@ import numpy as np
 
 
 class AnalyzedAudio:
-    def __init__(self, path: str, audio: np.ndarray, sr: int, metadata: dict = None):
+    def __init__(self, path: str, output_path, audio: np.ndarray, sr: int, metadata: dict = None):
         self.path = Path(path)
+        self.output_path = output_path
         self.base_path = Path(os.path.dirname(path))
         self.filename = os.path.basename(path).strip(".wav")
         self.metadata = metadata
