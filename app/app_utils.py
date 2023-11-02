@@ -2,8 +2,8 @@ import json
 from pydub import AudioSegment
 
 # Open the file and read its contents line by line
-with open("resources/toxic_words.txt", "r", encoding="utf-8") as file:
-    toxic_words = file.read().splitlines()
+with open("./resources/toxic.json", "r", encoding="utf-8") as file:
+    toxic_words = json.load(file)
 
 
 def get_problematic_sections():

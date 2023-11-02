@@ -48,33 +48,35 @@ def init_pipeline():
     return pipeline_
 
 
+def create_dir_if_not_exists(dirname='resources'):
+    output_path = os.path.join("resources/runs", dirname)
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    return output_path
+
+
+def check_audio_format(f, raw_audio_path):
+    if f.subtype == 'IMA_ADPCM':
+        print('bad format - IMA_ADPCM')
+        data = f.read(dtype='int16')
+        new_name = raw_audio_path.replace('.wav', '_fixed_format.wav').replace('.WAV', '_fixed_format.wav')
+        sf.write(new_name, data, f.samplerate, subtype='PCM_16')
+        raw_audio_path = new_name
+    return raw_audio_path
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('raw_audio_path', type=str, help='the path to the raw audio file')
     parser.add_argument('metadata', type=str, help='json object with metadata about the audio file')
     args = parser.parse_args()
 
-    # Get current date and time
-    now = datetime.now()
-    datetime_str = now.strftime("%Y-%m-%d-%H:%M:%S")
-
-    output_path = os.path.join("resources/runs", datetime_str)
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-
+    output_path = create_dir_if_not_exists()
     pipeline = init_pipeline()
-
     f = sf.SoundFile(args.raw_audio_path)
-    # fix bad format
-    if f.subtype == 'IMA_ADPCM':
-        print('bad format - IMA_ADPCM')
-        data = f.read(dtype='int16')
-        new_name = args.raw_audio_path.replace('.wav', '_fixed_format.wav').replace('.WAV', '_fixed_format.wav')
-        sf.write(new_name, data, f.samplerate, subtype='PCM_16')
-        args.raw_audio_path = new_name
-
+    raw_audio_path = check_audio_format(f, args.raw_audio_path)
     # Load the audio files
-    raw_audio, sample_rate = load_audio_file(args.raw_audio_path)
+    raw_audio, sample_rate = load_audio_file(raw_audio_path)
     metadata = load_json_file(args.metadata)
 
     chunk_num_seconds = 60 * 5
@@ -84,7 +86,7 @@ def main():
         chunks.append(raw_audio[i:i + sample_rate * chunk_num_seconds])
 
     # save chunks to files
-    for i in tqdm(range(len(chunks[:5]))):
+    for i in tqdm(range(len(chunks))):
         file_name = args.raw_audio_path.split('/')[-1]
         file_name_without_extension = file_name.replace('.wav', '').replace('.WAV', '')
         new_file_name = f'{file_name_without_extension}_{i}.wav'

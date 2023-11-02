@@ -1,9 +1,18 @@
+import os
+import sys
+from datetime import datetime
+
 import streamlit as st
 import soundfile as sf
+from tqdm import tqdm
+
+sys.path.insert(0, '/Users/karin.brisker/PycharmProjects/hebrew_tts')  # Replace with the path to your main directory
 
 from time_utils import TimeUtils
 from app_utils import get_problematic_sections, transcribe_audio, html_formatter
 from styling import custom_css, tag_colors
+from analyzed_audio import AnalyzedAudio
+from main import init_pipeline, create_dir_if_not_exists, check_audio_format, load_audio_file
 
 # Inject custom CSS styles into Streamlit
 st.markdown(custom_css, unsafe_allow_html=True)
@@ -87,6 +96,38 @@ def move_to_next_question(sections):
         st.session_state.current_question_index = 0
 
 
+def main_loop(raw_audio_path, metadata):
+    # Get current date and time
+    now = datetime.now()
+    datetime_str = now.strftime("%Y-%m-%d-%H:%M:%S")
+    output_path = create_dir_if_not_exists(datetime_str)
+    pipeline = init_pipeline()
+    # Load the audio files
+    raw_audio, sample_rate = load_audio_file(raw_audio_path)
+    chunk_num_seconds = 60 * 5
+
+    # split audio to chunks of 'chunk_num_seconds' seconds
+    chunks = []
+    for i in range(0, len(raw_audio), int(sample_rate * chunk_num_seconds)):
+        chunks.append(raw_audio[i:i + sample_rate * chunk_num_seconds])
+
+    # Export all of the individual chunks as wav files
+    for i, chunk in enumerate(chunks):
+        chunk_name = "chunk{0}.wav".format(i)
+        print("exporting", chunk_name)
+        chunk_path = os.path.join(output_path, chunk_name)
+        sf.write(chunk_path, chunk, sample_rate)
+        # run pipeline on each chunk
+        input_audio = AnalyzedAudio(path=chunk_path,
+                                    output_path=output_path, audio=chunks[i],
+                                    sr=int(sample_rate), metadata=metadata)
+
+        output_audio = pipeline(input_audio)
+        chunks[i] = output_audio
+
+    return chunks
+
+
 def main():
     # title in center
     st.markdown("<h1 style='text-align: center; color: brown;'>Your Child Kinder Guard 💂‍♀️🧸</h1>",
@@ -111,6 +152,8 @@ def main():
         if language_codes:
             st.write("You chose: " + ", ".join(language_codes) + " 🗣️", default="en")
 
+        metadata = {"language_codes": language_codes, "child_name": child_name}
+        main_loop(audio_file, metadata)
         transcript = transcribe_audio()
         formatted_text = html_formatter(transcript, child_name)
         with st.expander("Transcript", expanded=False):
