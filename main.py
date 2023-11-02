@@ -35,7 +35,6 @@ def load_json_file(path):
 
 def init_pipeline():
     pipeline_ = Pipeline(pipe_name='audio_indexer')
-
     pipeline_.add_step(NoiseReducer(name='noise_reducer'))
     pipeline_.add_step(AudioEnhancer(name='audio_enhancer'))
     pipeline_.add_step(WhisperTranscriber(name='transcriber'))

@@ -12,7 +12,7 @@ from time_utils import TimeUtils
 from app_utils import get_problematic_sections, transcribe_audio, html_formatter
 from styling import custom_css, tag_colors
 from analyzed_audio import AnalyzedAudio
-from main import init_pipeline, create_dir_if_not_exists, check_audio_format, load_audio_file
+from main import init_pipeline, create_dir_if_not_exists, load_audio_file
 
 # Inject custom CSS styles into Streamlit
 st.markdown(custom_css, unsafe_allow_html=True)
@@ -96,31 +96,65 @@ def move_to_next_question(sections):
         st.session_state.current_question_index = 0
 
 
-def main_loop(raw_audio_path, metadata):
-    # Get current date and time
-    now = datetime.now()
-    datetime_str = now.strftime("%Y-%m-%d-%H:%M:%S")
-    output_path = create_dir_if_not_exists(datetime_str)
+def process_audio(raw_audio_path, metadata):
+    """Main function to process raw audio data.
+
+    Args:
+        raw_audio_path (str): Path to the raw audio file.
+        metadata (dict): Metadata associated with the audio.
+
+    Returns:
+        list: List of processed audio chunks.
+    """
+    # Initialize
+    current_time = get_current_time()
+    output_directory = create_dir_if_not_exists(current_time)
     pipeline = init_pipeline()
-    # Load the audio files
     raw_audio, sample_rate = load_audio_file(raw_audio_path)
-    chunk_num_seconds = 60 * 5
 
-    # split audio to chunks of 'chunk_num_seconds' seconds
+    # Define chunk duration
+    chunk_duration_seconds = 5 * 60  # 5 minutes
+
+    # Split audio into chunks
+    audio_chunks = split_into_chunks(raw_audio, sample_rate, chunk_duration_seconds)
+
+    # Process each chunk
+    processed_chunks = process_chunks(audio_chunks, sample_rate, output_directory, pipeline, metadata)
+
+    return processed_chunks
+
+
+def get_current_time():
+    """Get current date and time as a string."""
+    now = datetime.now()
+    return now.strftime("%Y-%m-%d-%H:%M:%S")
+
+
+def split_into_chunks(audio_data, sample_rate, chunk_duration):
+    """Split audio data into chunks of a specified duration."""
     chunks = []
-    for i in range(0, len(raw_audio), int(sample_rate * chunk_num_seconds)):
-        chunks.append(raw_audio[i:i + sample_rate * chunk_num_seconds])
+    for i in range(0, len(audio_data), int(sample_rate * chunk_duration)):
+        chunks.append(audio_data[i:i + sample_rate * chunk_duration])
 
-    # Export all of the individual chunks as wav files
+    return chunks
+
+
+def process_chunks(chunks, sample_rate, output_directory, pipeline, metadata):
+    """Process each chunk of audio data and export as .wav files."""
+
     for i, chunk in enumerate(chunks):
-        chunk_name = "chunk{0}.wav".format(i)
-        print("exporting", chunk_name)
-        chunk_path = os.path.join(output_path, chunk_name)
+        # Export chunk as .wav file
+        chunk_name = f"chunk{i}.wav"
+        print(f"Exporting {chunk_name}")
+        chunk_path = os.path.join(output_directory, chunk_name)
         sf.write(chunk_path, chunk, sample_rate)
-        # run pipeline on each chunk
+
+        # Process chunk with pipeline
         input_audio = AnalyzedAudio(path=chunk_path,
-                                    output_path=output_path, audio=chunks[i],
-                                    sr=int(sample_rate), metadata=metadata)
+                                    output_path=output_directory,
+                                    audio=chunks[i],
+                                    sr=int(sample_rate),
+                                    metadata=metadata)
 
         output_audio = pipeline(input_audio)
         chunks[i] = output_audio
@@ -153,23 +187,23 @@ def main():
             st.write("You chose: " + ", ".join(language_codes) + " 🗣️", default="en")
 
         metadata = {"language_codes": language_codes, "child_name": child_name}
-        main_loop(audio_file, metadata)
-        transcript = transcribe_audio()
-        formatted_text = html_formatter(transcript, child_name)
-        with st.expander("Transcript", expanded=False):
-            st.markdown(f'<div style="direction: rtl; text-align: right;">{formatted_text}</div>',
-                        unsafe_allow_html=True)
-        with st.expander("Problematic Sections 🤔", expanded=True):
-            sections = get_problematic_sections()
-            st.write(len(sections))
-            audio_path = "resources/samples/REC00_3.wav"
-            audio = sf.SoundFile(audio_path)
-            # Start with the first question
-
-            # Initialize the current question index to 0
-            if "current_question_index" not in st.session_state:
-                st.session_state.current_question_index = 0
-            display_section(audio, st.session_state.current_question_index, sections)
+        processed_chunks = process_audio(audio_file, metadata)
+        # transcript = transcribe_audio()
+        # formatted_text = html_formatter(transcript, child_name)
+        # with st.expander("Transcript", expanded=False):
+        #     st.markdown(f'<div style="direction: rtl; text-align: right;">{formatted_text}</div>',
+        #                 unsafe_allow_html=True)
+        # with st.expander("Problematic Sections 🤔", expanded=True):
+        #     sections = get_problematic_sections()
+        #     st.write(len(sections))
+        #     audio_path = "resources/samples/REC00_3.wav"
+        #     audio = sf.SoundFile(audio_path)
+        #     # Start with the first question
+        #
+        #     # Initialize the current question index to 0
+        #     if "current_question_index" not in st.session_state:
+        #         st.session_state.current_question_index = 0
+        #     display_section(audio, st.session_state.current_question_index, sections)
 
 
 if __name__ == '__main__':
