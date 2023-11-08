@@ -18,7 +18,7 @@ class TextualSentimentAnalyzer(Pipe):
             top_k=None
         )
         self.HebEMO_model = HebEMO()
-        self.emotions = ['anticipation', 'joy', 'trust', 'fear', 'surprise', 'anger', 'sadness', 'disgust']
+        self.emotions = self.HebEMO_model.emotions
 
     def get_sentiment(self, text):
         sentiment_scores = self.analyzer(text.splitlines())
@@ -32,10 +32,12 @@ class TextualSentimentAnalyzer(Pipe):
         return emotion
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
-        segments = analyzed.transcript.splitlines()
+        # split the transcript into segments of 10 lines each
+        segments = ["\n".join(analyzed.transcript.splitlines()[i:i + 10]) for i in
+                    range(0, len(analyzed.transcript.splitlines()), 10)]
         sentiments_and_emotions = []
 
-        for segment in tqdm(segments):
+        for segment in tqdm(segments, desc="Textual Sentiment Analyzer on segments"):
             sentiment = self.get_sentiment(segment)
             emotion = self.get_emotion(segment)
             sentiments_and_emotions.append((sentiment, emotion))

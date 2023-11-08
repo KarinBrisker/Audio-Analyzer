@@ -1,6 +1,8 @@
 import os
 import sys
 from datetime import datetime
+import warnings
+warnings.filterwarnings("ignore")
 
 import streamlit as st
 import soundfile as sf
@@ -142,10 +144,11 @@ def split_into_chunks(audio_data, sample_rate, chunk_duration):
 def process_chunks(chunks, sample_rate, output_directory, pipeline, metadata):
     """Process each chunk of audio data and export as .wav files."""
 
-    for i, chunk in enumerate(chunks):
+    for i, chunk in tqdm(enumerate(chunks), total=len(chunks), desc="Running on chunks"):
         # Export chunk as .wav file
         chunk_name = f"chunk{i}.wav"
-        print(f"Exporting {chunk_name}")
+        print("\n**********" * 5)
+        print(f"\nExporting {chunk_name} out of {len(chunks)} chunks")
         chunk_path = os.path.join(output_directory, chunk_name)
         sf.write(chunk_path, chunk, sample_rate)
 

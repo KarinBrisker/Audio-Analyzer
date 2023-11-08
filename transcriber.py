@@ -12,7 +12,6 @@ class WhisperTranscriber(Pipe):
         super().__init__(name=name)
         self.model = whisper.load_model("medium")
         self.language = language
-        print("Whisper model loaded.")
 
     def transcribe_audio(self, analyzed: AnalyzedAudio):
         transcript = self.model.transcribe(str(analyzed.path), language="he", fp16=False)

@@ -14,7 +14,6 @@ class Pipeline:
         self.steps.append(step)
 
     def __call__(self, updated_audio: AnalyzedAudio):
-        print(f"Running pipeline: {self.pipe_name}")
         for i, step in enumerate(self.steps, start=1):
             step_description = f"Step {i}: {step.name}"
             with tqdm(total=1, desc=step_description) as pbar:
@@ -26,10 +25,12 @@ class Pipeline:
 class Pipe(metaclass=ABCMeta):
     def __init__(self, name, *args, **kwargs):
         self.name = name
+        print(f"init:    {self.name}")
         self.args = args
         self.kwargs = kwargs
 
     @abstractmethod
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        print(f"\n      >>> {self.name}")
         pass
 

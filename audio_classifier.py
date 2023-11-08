@@ -10,7 +10,7 @@ from analyzed_audio import AnalyzedAudio
 from pipeline import Pipe
 
 
-class Yamnet(Pipe):
+class AudioClassifier(Pipe):
     # https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
     def __init__(self, name):
         super().__init__(name)
@@ -44,6 +44,7 @@ class Yamnet(Pipe):
         return sample_width * 8, n_channels
 
     def __call__(self, analyzed: AnalyzedAudio) -> AnalyzedAudio:
+        # print("\nRunning Audio Classifier")
         file_path = str(analyzed.path)
         bit_depth, channels = self.get_wav_format(file_path)
         print(f'The file is {bit_depth}-bit and has {channels} channel(s).')
@@ -54,8 +55,9 @@ class Yamnet(Pipe):
         scores_np = scores.numpy()
         inferred_class = self.class_names[scores_np.mean(axis=0).argmax()]
 
-        print(f'The main sound is: {inferred_class}')
-        print(f'The embeddings shape: {embeddings.shape}')
+        print(f'\nThe main sound is: {inferred_class}')
+        print(f'\nThe embeddings shape: {embeddings.shape}')
 
         analyzed.__setattr__("yamnet", inferred_class)
+        print("\nAudio Classifier finished")
         return analyzed

@@ -1,13 +1,12 @@
 import argparse
 import json
 import os
-from datetime import datetime
 
 import librosa
 from tqdm import tqdm
 
 from analyzed_audio import AnalyzedAudio
-from audio_classifier import Yamnet
+from audio_classifier import AudioClassifier
 from audio_enhancer import AudioEnhancer
 from clap_model import ClapClassifier
 from noise_reducer import NoiseReducer
@@ -40,7 +39,7 @@ def init_pipeline():
     pipeline_.add_step(WhisperTranscriber(name='transcriber'))
     pipeline_.add_step(ToxicWordsDetector(name='toxic_words_detector'))
     pipeline_.add_step(TextualSentimentAnalyzer(name='text_sentiment_analyzer'))
-    pipeline_.add_step(Yamnet(name='audio_classifier'))
+    pipeline_.add_step(AudioClassifier(name='audio_classifier'))
     pipeline_.add_step(SpeakerDiarization(name='speaker_diarization'))
     pipeline_.add_step(ClapClassifier(name='clap_classifier'))
     pipeline_.add_step(Ranker(name='ranker'))
@@ -85,7 +84,7 @@ def main():
         chunks.append(raw_audio[i:i + sample_rate * chunk_num_seconds])
 
     # save chunks to files
-    for i in tqdm(range(len(chunks))):
+    for i in tqdm(range(len(chunks)), desc='running on chunks'):
         file_name = args.raw_audio_path.split('/')[-1]
         file_name_without_extension = file_name.replace('.wav', '').replace('.WAV', '')
         new_file_name = f'{file_name_without_extension}_{i}.wav'
